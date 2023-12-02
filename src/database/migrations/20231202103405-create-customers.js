@@ -26,7 +26,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      monthly_salary: {
+      monthly_income: {
         type: Sequelize.FLOAT,
         allowNull: false,
       },

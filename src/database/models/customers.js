@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       last_name: DataTypes.STRING,
       age: DataTypes.INTEGER,
       phone_number: DataTypes.STRING,
-      monthly_salary: DataTypes.FLOAT,
+      monthly_income: DataTypes.FLOAT,
       approved_limit: DataTypes.FLOAT,
     },
     {
