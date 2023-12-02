@@ -26,7 +26,7 @@ const registerController = async (req, res, next) => {
       approved_limit: newCustomer.approved_limit,
       phone_number: newCustomer.phone_number
     }
-    console.log('customer - ', customer)
+
     await transaction.commit();
     res.status(201).json(customer);
   } catch (err) {

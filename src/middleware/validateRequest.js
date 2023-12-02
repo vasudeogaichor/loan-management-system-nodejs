@@ -34,11 +34,8 @@ const authenticateRequest = (req, res) => {
 
 const validateRequest = async (req, res, next) => {
   try {
-    console.log("url", req.url);
     authenticateRequest(req, res);
     const apiService = extractUrlPath(req.url);
-    console.log('apiService- ', apiService)
-    console.log("req.method - ", req.method)
 
     // TODO: Add payload and param parsing to make sure data types of fields are as defined
     // switch (req.method) {
