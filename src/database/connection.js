@@ -43,12 +43,10 @@ fs.readdirSync(path.join(__dirname, 'models'))
     );
   })
   .forEach((file) => {
-    console.log('file = ', file)
     const model = require(path.join(__dirname, 'models', file))(
       sequelize,
       DataTypes
     );
-    console.log('__dirname - ', __dirname)
     db[model.name] = model;
   });
  
@@ -58,7 +56,6 @@ fs.readdirSync(path.join(__dirname, 'models'))
 //     db[modelName].associate(db);
 //   }
 // });
-console.log('db - ', db)
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
