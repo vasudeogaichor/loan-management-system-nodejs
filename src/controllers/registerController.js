@@ -1,8 +1,9 @@
 const db = require("../database/connection");
 
 const registerController = async (req, res, next) => {
-  console.log("body - ", req.body);
   const transaction = await db.sequelize.transaction();
+  const approvedLimit = req.body.monthly_income * 2;
+
   try {
     const newCustomer = await db.customers.create(
       {
@@ -12,13 +13,13 @@ const registerController = async (req, res, next) => {
         age: req.body.age,
         monthly_salary: req.body.monthly_income,
         phone_number: req.body.phone_number,
-        approved_limit: 50000
+        approved_limit: approvedLimit
       },
       { transaction }
     );
-    console.log("newCustomer - ", newCustomer);
+
     await transaction.commit();
-    res.status(201).json({ newCustomer });
+    res.status(201).json({ ...newCustomer.dataValues });
   } catch (err) {
     await transaction.rollback();
     console.error("Error creating customer:", err);
