@@ -4,12 +4,12 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("loans", {
-      // id: {
-      //   allowNull: false,
-      //   autoIncrement: true,
-      //   primaryKey: true,
-      //   type: Sequelize.INTEGER,
-      // },
+      id: {
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: false,
+        type: Sequelize.INTEGER,
+      },
       customer_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
@@ -17,12 +17,6 @@ module.exports = {
           model: "customers",
           key: "id",
         },
-      },
-      loan_id: {
-        allowNull: false,
-        primaryKey: true,
-        autoIncrement: false,
-        type: Sequelize.INTEGER,
       },
       loan_amount: {
         allowNull: false,

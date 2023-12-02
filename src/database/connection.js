@@ -60,5 +60,8 @@ fs.readdirSync(path.join(__dirname, 'models'))
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+// // TODO: Debug why sequelize using id column in customers table by defualt, then remove below line
+// db.customers.removeAttribute('id');
+
 // Exporting the module
 module.exports = db;
