@@ -81,7 +81,7 @@ const calculateCustomerDetails = (pastLoans) => {
       customerDetails.pastLoansPaidOnTime += loan.emis_paid_on_time;
 
       // Add monthly_payment to sumOfCurrentLoans
-      customerDetails.sumOfCurrentLoans += loan.monthly_payment;
+      customerDetails.sumOfCurrentLoans += loan.loan_amount;
     }
   });
 
@@ -95,7 +95,7 @@ const eligibilityController = async (req, res, next) => {
   try {
     const customer = await db.customers.findByPk(customer_id, {
       attributes: ["id", "monthly_salary"],
-    });
+    }, {transaction});
 
     const customerLoanData = await db.loans.findAll({
       where: {

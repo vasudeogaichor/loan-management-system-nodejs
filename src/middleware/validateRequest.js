@@ -3,8 +3,11 @@ const extractUrlPath = (requestUrl) => {
   if ('/register'.includes(requestUrl)) {
     return 'register'
   }
-  if ('/check-eligibility'.includes) {
-    return 'check-eligibility'
+  if ('/check-eligibility'.includes(requestUrl)) {
+    return 'loan'
+  }
+  if ('/create-loan'.includes(requestUrl)) {
+    return 'loan'
   }
 };
 
