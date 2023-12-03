@@ -8,8 +8,8 @@ module.exports = (sequelize, DataTypes) => {
       interest_rate: DataTypes.FLOAT,
       monthly_payment: DataTypes.FLOAT,
       emis_paid_on_time: DataTypes.INTEGER,
-      start_date: DataTypes.DATE,
-      end_date: DataTypes.DATE,
+      start_date: DataTypes.DATEONLY,
+      end_date: DataTypes.DATEONLY,
     },
     {
       timestamps: true,
