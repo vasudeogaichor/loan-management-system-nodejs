@@ -40,7 +40,7 @@ async function ingestCustomerData(filePath) {
     await transaction.commit();
   } catch (error) {
     await transaction.rollback();
-    throw error;
+    console.log('Error during data ingestion: ', error.stack)
   }
 }
 
@@ -89,7 +89,7 @@ async function ingestLoanData(filePath) {
     await transaction.commit();
   } catch (error) {
     await transaction.rollback();
-    throw error;
+    console.log('Error during data ingestion: ', error.stack)
   }
 }
 
