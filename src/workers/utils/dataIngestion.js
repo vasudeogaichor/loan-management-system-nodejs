@@ -1,5 +1,6 @@
 const xlsx = require("xlsx");
 const db = require("../../database/connection");
+// const { executeChildProcess } = require('../../scripts/childProcessHandler');
 
 // TODO - if error is triggered while data ingestion,
 // use a logger library to dump the error stack
@@ -47,7 +48,7 @@ async function ingestCustomerData(filePath) {
 }
 
 async function processCustomerRow(row, transaction) {
-  // // Check if customer_id exists in the database
+  // Check if customer_id exists in the database
   const existingCustomer = await db.customers.findByPk(row.customer_id, {
     transaction,
   });
@@ -74,6 +75,7 @@ async function processCustomerRow(row, transaction) {
 }
 
 async function ingestLoanData(filePath) {
+  const updatedLoanCustomerIds = new Set();
   let transaction;
   try {
     transaction = await db.sequelize.transaction();
@@ -85,10 +87,17 @@ async function ingestLoanData(filePath) {
         row[col] = dataRow[index];
       });
 
+      updatedLoanCustomerIds.add(row.customer_id)
       await processLoanRow(row, transaction);
     }
 
     await transaction.commit();
+    console.log('updatedLoanCustomerIds - ', [...updatedLoanCustomerIds])
+    if (updatedLoanCustomerIds.size) {
+        // TODO - move customer debt updates to child process
+        // await executeChildProcess('updateCustomerDebtProcess.js', [...updatedLoanCustomerIds]);
+        await updateCustomerDebt([...updatedLoanCustomerIds])
+    }
   } catch (error) {
     await transaction.rollback();
     console.log('Error during data ingestion: ', error.stack)
@@ -96,7 +105,7 @@ async function ingestLoanData(filePath) {
 }
 
 async function processLoanRow(row, transaction) {
-  // // Check if loan_id exists in the database
+  // Check if loan_id exists in the database
   const existingLoan = await db.loans.findByPk(row.loan_id, {
     transaction,
   });
@@ -121,4 +130,35 @@ async function processLoanRow(row, transaction) {
   }
 }
 
+async function updateCustomerDebt(updatedLoanCustomerIds) {
+    let transaction;
+    try {
+      transaction = await db.sequelize.transaction();
+  
+      for (const customerId of updatedLoanCustomerIds) {
+        const totalDebt = await db.loans.sum('loan_amount', {
+          where: { customer_id: customerId },
+          transaction,
+        });
+  
+        await db.customers.update(
+          { current_debt: totalDebt },
+          { where: { id: customerId }, transaction }
+        );
+      }
+  
+      await transaction.commit();
+  
+      console.log('Customer debts updated successfully.');
+    } catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
+  
+      console.error('Error updating customer debt:', error);
+    }
+  }
+
 module.exports = { ingestCustomerData, ingestLoanData };
+
+
