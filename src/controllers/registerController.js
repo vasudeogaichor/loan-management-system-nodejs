@@ -2,17 +2,24 @@ const db = require("../database/connection");
 
 const registerController = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
-  const approvedLimit = Math.round(req.body.monthly_salary * 2 / 100000) * 100000;
+  const { id, first_name, last_name, age, phone_number, monthly_income } = req.body
+
+  const approvedLimit = Math.round(monthly_income * 36 / 100000) * 100000;
+
+  let newId = id;
+  if (!newId) {
+    newId = await db.customers.max('id') + 1
+  }
 
   try {
     const newCustomer = await db.customers.create(
       {
-        id: req.body.id,
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        age: req.body.age,
-        monthly_salary: req.body.monthly_income,
-        phone_number: req.body.phone_number,
+        id: newId,
+        first_name,
+        last_name,
+        age,
+        monthly_salary: monthly_income,
+        phone_number,
         approved_limit: approvedLimit
       },
       { transaction }

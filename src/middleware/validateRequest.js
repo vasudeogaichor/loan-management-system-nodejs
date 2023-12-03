@@ -1,10 +1,10 @@
 const extractUrlPath = (requestUrl) => {
-    const match = requestUrl.match(/^\/(\w+)/);
-  
-    if (match) {
-      return match[1];
-    }
+  const match = requestUrl.match(/^\/(\w+)/);
+
+  if (match) {
+    return match[1];
   }
+};
 
 const authenticateRequest = (req, res) => {
   if (!req.headers.authorization) {
@@ -32,10 +32,51 @@ const authenticateRequest = (req, res) => {
   req.user = { username: "exampleUser" };
 };
 
+const validateAndParsePayload = (payload, expectedFormat) => {
+  const parsedPayload = {};
+  for (const field in expectedFormat) {
+    const { type } = expectedFormat[field];
+    let value = payload[field];
+    if (value) {
+      switch (type.name) {
+        case "Number":
+          if (isNaN(value)) {
+            res.status(400).json({
+              error: `${field} type is incorrect: ${type.name} | value: ${value}`,
+            });
+          }
+          parsedPayload[`${field}`] = parseInt(value, 10);
+          break;
+        case "String":
+          value = String(value);
+          if (value.trim().length) {
+            parsedPayload[`${field}`] = value;
+          }
+          break;
+        case "Date":
+          parsedPayload[`${field}`] = value;
+          break;
+        default:
+          res.status(400).json({
+            error: `Unsupported ${field} type: ${type.name}`,
+          });
+          return null;
+      }
+    }
+  }
+
+  return parsedPayload;
+};
+
 const validateRequest = async (req, res, next) => {
   try {
     authenticateRequest(req, res);
     const apiService = extractUrlPath(req.url);
+
+    if (Object.values(req.body).length) {
+      const payloadFormat = require(`../apiformats/payloadFormats/${apiService}PayloadFormat`);
+      req.body = validateAndParsePayload(req.body, payloadFormat);
+    }
 
     // TODO: Add payload and param parsing to make sure data types of fields are as defined
     // switch (req.method) {
@@ -43,22 +84,22 @@ const validateRequest = async (req, res, next) => {
     //       const criteria = parseCrieria(apiService, req.query, res);
     //       req.query = criteria;
     //       break;
-  
+
     //     case "POST":
     //       const parsedResourcePOST = parseResource(apiService, req.body, res);
     //       req.body = parsedResourcePOST;
     //       break;
-  
+
     //     case "PUT":
     //       const parsedResourcePUT = parseResource(apiService, req.body, res);
     //       req.body = parsedResourcePUT;
     //       break;
-  
+
     //     case "DELETE":
     //       break;
     //   }
 
-  next();
+    next();
   } catch (e) {
     res.status(400).json(`Error: ${e}`);
   }
