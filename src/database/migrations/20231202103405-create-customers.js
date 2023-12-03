@@ -26,13 +26,17 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      monthly_income: {
+      monthly_salary: {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
       approved_limit: {
         type: Sequelize.FLOAT,
         allowNull: false,
+      },
+      current_debt: {
+        type: Sequelize.FLOAT,
+        allowNull: true,
       },
       created_at: {
         allowNull: false,

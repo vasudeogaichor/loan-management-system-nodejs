@@ -2,7 +2,7 @@ const db = require("../database/connection");
 
 const registerController = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
-  const approvedLimit = Math.round(req.body.monthly_income * 2 / 100000) * 100000;
+  const approvedLimit = Math.round(req.body.monthly_salary * 2 / 100000) * 100000;
 
   try {
     const newCustomer = await db.customers.create(
@@ -11,7 +11,7 @@ const registerController = async (req, res, next) => {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
         age: req.body.age,
-        monthly_income: req.body.monthly_income,
+        monthly_salary: req.body.monthly_income,
         phone_number: req.body.phone_number,
         approved_limit: approvedLimit
       },
@@ -22,7 +22,7 @@ const registerController = async (req, res, next) => {
       customer_id: newCustomer.id,
       name: newCustomer.first_name.concat(' ', newCustomer.last_name),
       age: newCustomer.age,
-      monthly_income: newCustomer.monthly_income,
+      monthly_income: newCustomer.monthly_salary,
       approved_limit: newCustomer.approved_limit,
       phone_number: newCustomer.phone_number
     }

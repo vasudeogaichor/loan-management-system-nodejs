@@ -1,5 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const { watchForChanges } = require('./workers/worker');
+
 const { routes } = require("./routes");
 const db = require("./database/connection");
 
@@ -19,4 +21,5 @@ app.use("/", routes);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  watchForChanges();
 });
