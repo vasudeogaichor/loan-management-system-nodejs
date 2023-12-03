@@ -15,13 +15,13 @@ const { validateRequest } = require("../middleware/validateRequest");
 router.post("/register", validateRequest, registerController);
 router.post("/check-eligibility", validateRequest, eligibilityController);
 router.post("/create-loan", validateRequest, loanCreateController);
-router.post("/view-loan/:loan_id", validateRequest, loanViewController);
-router.post(
+router.get("/view-loan/:loan_id", validateRequest, loanViewController);
+router.get(
   "/make-payment/:customer_id/:loan_id",
   validateRequest,
   paymentController
 );
-router.post(
+router.get(
   "/view-statement/:customer_id/:loan_id",
   validateRequest,
   statementController
