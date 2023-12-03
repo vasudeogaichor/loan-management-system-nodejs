@@ -9,6 +9,9 @@ const extractUrlPath = (requestUrl) => {
   if ('/create-loan'.includes(requestUrl)) {
     return 'loan'
   }
+  if ('/make-payment'.includes(requestUrl)) {
+    return 'payment'
+  }
 };
 
 const authenticateRequest = (req, res) => {

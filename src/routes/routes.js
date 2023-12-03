@@ -16,7 +16,7 @@ router.post("/register", validateRequest, registerController);
 router.post("/check-eligibility", validateRequest, eligibilityController);
 router.post("/create-loan", validateRequest, loanCreateController);
 router.get("/view-loan/:loan_id", validateRequest, loanViewController);
-router.get(
+router.post(
   "/make-payment/:customer_id/:loan_id",
   validateRequest,
   paymentController
