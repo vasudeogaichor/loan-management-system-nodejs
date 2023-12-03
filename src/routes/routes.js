@@ -22,7 +22,7 @@ router.post(
   paymentController
 );
 router.get(
-  "/view-statement/:customer_id/:loan_id",
+  "/view-statement/:customer_id",
   validateRequest,
   statementController
 );
