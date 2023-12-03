@@ -1,6 +1,8 @@
 const xlsx = require("xlsx");
 const db = require("../../database/connection");
 
+// TODO - if error is triggered while data ingestion,
+// use a logger library to dump the error stack
 function convertExcelDateToMySQLDate(excelDateSerial) {
   const excelStartDate = new Date(1900, 0, 1);
 
