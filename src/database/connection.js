@@ -50,12 +50,11 @@ fs.readdirSync(path.join(__dirname, 'models'))
     db[model.name] = model;
   });
  
-// TODO - uncomment after adding associations
-// Object.keys(db).forEach((modelName) => {
-//   if (db[modelName].associate) {
-//     db[modelName].associate(db);
-//   }
-// });
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;

@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define(
+  const loansModel = sequelize.define(
     "loans",
     {
       customer_id: DataTypes.INTEGER,
@@ -17,4 +17,10 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
     }
   );
+
+  loansModel.associate = (db) => {
+    loansModel.belongsTo(db.customers)
+  }
+
+  return loansModel
 };
