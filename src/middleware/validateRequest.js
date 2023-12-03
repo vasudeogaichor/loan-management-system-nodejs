@@ -78,31 +78,10 @@ const validateRequest = async (req, res, next) => {
     authenticateRequest(req, res);
     const apiService = extractUrlPath(req.url);
     console.log('req.url - ', req.url)
-    if (Object.values(req.body).length) {
+    if (apiService && Object.values(req.body).length) {
       const payloadFormat = require(`../apiformats/payloadFormats/${apiService}PayloadFormat`);
       req.body = validateAndParsePayload(req.body, payloadFormat);
     }
-
-    // TODO: Add payload and param parsing to make sure data types of fields are as defined
-    // switch (req.method) {
-    //     case "GET":
-    //       const criteria = parseCrieria(apiService, req.query, res);
-    //       req.query = criteria;
-    //       break;
-
-    //     case "POST":
-    //       const parsedResourcePOST = parseResource(apiService, req.body, res);
-    //       req.body = parsedResourcePOST;
-    //       break;
-
-    //     case "PUT":
-    //       const parsedResourcePUT = parseResource(apiService, req.body, res);
-    //       req.body = parsedResourcePUT;
-    //       break;
-
-    //     case "DELETE":
-    //       break;
-    //   }
 
     next();
   } catch (e) {
