@@ -80,7 +80,7 @@ const validateRequest = async (req, res, next) => {
   try {
     authenticateRequest(req, res);
     const apiService = extractUrlPath(req.url);
-    console.log('req.url - ', req.url)
+
     if (apiService && Object.values(req.body).length) {
       const payloadFormat = require(`../apiformats/payloadFormats/${apiService}PayloadFormat`);
       req.body = validateAndParsePayload(req.body, payloadFormat);

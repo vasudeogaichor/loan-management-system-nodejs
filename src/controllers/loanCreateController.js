@@ -1,6 +1,7 @@
 const db = require("../database/connection");
 const eligibilityController = require("./eligibilityController");
-const {updateCustomerDebt } = require('../workers/utils/dataIngestion')
+const { updateCustomerDebt } = require("../workers/utils/dataIngestion");
+const { getRoundedAmount } = require("../utils");
 
 const loanCreateController = async (req, res, next) => {
   const {
@@ -33,7 +34,7 @@ const loanCreateController = async (req, res, next) => {
   });
 
   let transaction = await db.sequelize.transaction();
-
+  console.log("eligibilityResult - ", eligibilityResult);
   try {
     if (
       eligibilityResult.approval &&
@@ -48,7 +49,7 @@ const loanCreateController = async (req, res, next) => {
         tenure,
         monthly_payment: eligibilityResult.monthly_installment,
         start_date,
-        end_date
+        end_date,
       };
 
       const newLoan = await db.loans.create(newLoanData, { transaction });
@@ -59,24 +60,22 @@ const loanCreateController = async (req, res, next) => {
         loan_approved: true,
         monthly_installment: newLoan.monthly_payment,
       });
-
     } else if (eligibilityResult.approve) {
       res.status(201).json({
-        customer_id: newLoan.customer_id,
+        customer_id,
         loan_approved: false,
-        monthly_installment: newLoan.monthly_payment,
+        monthly_installment: getRoundedAmount(loan_amount / tenure),
         message: `Loan can be created, but interest rate will be ${eligibilityResult.corrected_interest_rate}`,
       });
-
     } else {
       res.status(201).json({
-        customer_id: newLoan.customer_id,
+        customer_id,
         loan_approved: false,
-        monthly_installment: newLoan.monthly_payment,
+        monthly_installment: getRoundedAmount(loan_amount / tenure),
         message: `Loan cannot be created based on customer's credit score`,
       });
     }
-    await updateCustomerDebt([customer_id])
+    await updateCustomerDebt([customer_id]);
   } catch (error) {
     await transaction.rollback();
     console.error("Error creating new loan:", error);

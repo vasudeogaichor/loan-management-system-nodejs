@@ -1,4 +1,5 @@
 const db = require("../database/connection");
+const { getRoundedAmount } = require("../utils");
 
 const paymentController = async (req, res, next) => {
   const { emi_amount } = req.body;
@@ -29,12 +30,13 @@ const paymentController = async (req, res, next) => {
             .json({
               Error: `EMI amount should be equal to greater than ${loan.monthly_payment}`,
             }); 
+            return;
         }
         // Lack of data, since only recording EMIs paid on time and not total EMIs paid.
         // We'll consider total EMIs paid till date = emis_paid_on_time
         const totalAmountPaid = loan.emis_paid_on_time * loan.monthly_payment + emi_amount;
         const remainingAmount = loan.loan_amount - totalAmountPaid;
-        const revisedEMI = Math.round(remainingAmount / (loan.tenure - loan.emis_paid_on_time ) * 100 ) / 100
+        const revisedEMI = getRoundedAmount(remainingAmount / (loan.tenure - loan.emis_paid_on_time ))
         loan.monthly_payment = revisedEMI
         if (!loan.emis_paid_on_time) {
             loan.emis_paid_on_time = 1

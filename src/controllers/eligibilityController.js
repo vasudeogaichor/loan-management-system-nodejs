@@ -1,4 +1,5 @@
 const db = require("../database/connection");
+const { getRoundedAmount } = require("../utils");
 
 const calculateCreditScore = (customerDetails) => {
   // Extract relevant information from customer details
@@ -9,6 +10,7 @@ const calculateCreditScore = (customerDetails) => {
     loanApprovedVolume,
     sumOfCurrentLoans,
     monthlySalary,
+    sumOfCurrentEMIs
   } = customerDetails;
 
   // Calculate credit score based on the specified components
@@ -42,7 +44,7 @@ const calculateCreditScore = (customerDetails) => {
   }
 
   // Check if sum of all current EMIs > 50% of monthly salary
-  if ((sumOfCurrentLoans * correctedInterestRate) / 100 > 0.5 * monthlySalary) {
+  if ((sumOfCurrentEMIs * correctedInterestRate) / 100 > 0.5 * monthlySalary) {
     loanApprovalStatus = "Loan Not Approved - High EMIs";
   }
 
@@ -60,6 +62,7 @@ const calculateCustomerDetails = (pastLoans) => {
     loanActivityInCurrentYear: 0,
     loanApprovedVolume: 0,
     sumOfCurrentLoans: 0,
+    sumOfCurrentEMIs: 0
   };
 
   const currentDate = new Date();
@@ -80,8 +83,11 @@ const calculateCustomerDetails = (pastLoans) => {
       // Increment pastLoansPaidOnTime if emis_paid_on_time is greater than 0
       customerDetails.pastLoansPaidOnTime += loan.emis_paid_on_time;
 
-      // Add monthly_payment to sumOfCurrentLoans
+      // Add loan_amount to sumOfCurrentLoans
       customerDetails.sumOfCurrentLoans += loan.loan_amount;
+
+      // Add monthly emis to sumOfCurrentEMIs
+      customerDetails.sumOfCurrentEMIs += loan.monthly_payment;
     }
   });
 
@@ -118,7 +124,7 @@ const eligibilityController = async (req, res, next) => {
       interest_rate,
       corrected_interest_rate: result.correctedInterestRate,
       tenure,
-      monthly_installment: Math.round((loan_amount / tenure) * 100) / 100,
+      monthly_installment: getRoundedAmount(loan_amount / tenure),
     };
 
     res.status(200).json(response);

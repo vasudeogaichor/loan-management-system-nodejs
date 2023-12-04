@@ -1,10 +1,11 @@
 const db = require("../database/connection");
+const { getRoundedAmount } = require("../utils");
 
 const registerController = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   const { id, first_name, last_name, age, phone_number, monthly_income } = req.body
 
-  const approvedLimit = Math.round(monthly_income * 36 / 100000) * 100000;
+  const approvedLimit = getRoundedAmount((monthly_income * 36 / 100000) * 100000);
 
   let newId = id;
   if (!newId) {
