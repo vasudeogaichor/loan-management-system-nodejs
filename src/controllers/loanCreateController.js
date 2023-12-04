@@ -1,5 +1,6 @@
 const db = require("../database/connection");
 const eligibilityController = require("./eligibilityController");
+const {updateCustomerDebt } = require('../workers/utils/dataIngestion')
 
 const loanCreateController = async (req, res, next) => {
   const {
@@ -75,6 +76,7 @@ const loanCreateController = async (req, res, next) => {
         message: `Loan cannot be created based on customer's credit score`,
       });
     }
+    await updateCustomerDebt([customer_id])
   } catch (error) {
     await transaction.rollback();
     console.error("Error creating new loan:", error);

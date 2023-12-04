@@ -1,6 +1,5 @@
 const xlsx = require("xlsx");
 const db = require("../../database/connection");
-// const { executeChildProcess } = require('../../scripts/childProcessHandler');
 
 // TODO - if error is triggered while data ingestion,
 // use a logger library to dump the error stack
@@ -92,10 +91,8 @@ async function ingestLoanData(filePath) {
     }
 
     await transaction.commit();
-    console.log('updatedLoanCustomerIds - ', [...updatedLoanCustomerIds])
     if (updatedLoanCustomerIds.size) {
         // TODO - move customer debt updates to child process
-        // await executeChildProcess('updateCustomerDebtProcess.js', [...updatedLoanCustomerIds]);
         await updateCustomerDebt([...updatedLoanCustomerIds])
     }
   } catch (error) {
@@ -159,6 +156,6 @@ async function updateCustomerDebt(updatedLoanCustomerIds) {
     }
   }
 
-module.exports = { ingestCustomerData, ingestLoanData };
+module.exports = { ingestCustomerData, ingestLoanData, updateCustomerDebt };
 
 
